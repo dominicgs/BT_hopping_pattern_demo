@@ -25,9 +25,10 @@ def animated_barplot(count, fig, pattern, bars, waterfall):
 		previous_channel = channels.pop()
 		waterfall[previous_channel[0]].set_color('white')
 		waterfall[previous_channel[0]].set_height(0)
-	channels.insert(0, pattern.next())
+	freq, direction = pattern.next()
+	channels.insert(0, (freq-2400, direction))
 	for idx, timeslot in enumerate(channels):
-		channel, master = timeslot
+		channel, direction = timeslot
 		if idx < len(colours):
 			bars[channel].set_color(colours[idx])
 			bars[channel].set_height(1)
@@ -38,7 +39,7 @@ def animated_barplot(count, fig, pattern, bars, waterfall):
 		waterfall[channel].set_y(-0.1 * idx)
 		# Blue for master to slave
 		# Red for slave to master
-		if master:
+		if direction:
 			waterfall[channel].set_color('blue')
 		else:
 			waterfall[channel].set_color('red')
@@ -47,10 +48,10 @@ def animated_barplot(count, fig, pattern, bars, waterfall):
 def draw_pattern(title, pattern):
 	fig = plt.figure()
 	fig.canvas.set_window_title(title)
-	bars = plt.bar(range(79), [0]*79, width=1)
-	waterfall = plt.bar(range(79), [0]*79, width=1)
+	bars = plt.bar(range(2000, 2083), [0]*83, width=1)
+	waterfall = plt.bar(range(2000, 2083), [0]*83, width=1)
 	plt.title(title)
-	plt.xticks([-2, 38, 78], ('2400', '2440', '2480'))
+	plt.xticks([2000, 2040, 2083], ('2400', '2440', '2483'))
 	plt.xlabel('Frequency (MHz)')
 	plt.yticks([-5,0,1], ('', '', ''))
 	ani = animation.FuncAnimation(fig, animated_barplot, fargs=(fig, pattern, bars, waterfall))
