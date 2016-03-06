@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+# Copyright 2016 Dominic Spill
+
+from BT_hopping_pattern import piconet
+
+import matplotlib
+matplotlib.use('qt5agg')
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+MAX_HISTORY = 5
+channels = []
+colours = [
+    #'#0000cc',
+    '#ff3300',
+    '#0000ff',
+    '#0066ff',
+    '#3399ff',
+    '#66ccff'
+]
+
+def animated_barplot(count, rects, pattern):
+    if len(channels) == MAX_HISTORY:
+        previous_channel = channels.pop()
+        rects[previous_channel].set_height(0)
+    channels.insert(0, pattern.next())
+    for idx, channel in enumerate(channels):
+        rects[channel].set_color(colours[idx])
+        rects[channel].set_height(1)
+    fig.canvas.draw()
+
+fig = plt.figure()
+rects = plt.bar(range(79), [0]*79, width=1, align='center')
+print dir(rects[0])
+address = 0x6587cba9
+pn = piconet.Piconet(address)
+ani = animation.FuncAnimation(fig, animated_barplot, fargs=(rects,pn.gen_hops()))
+plt.show()
+
+
+# if __name__ == '__main__':
+# 	import sys
+# 	if len(sys.argv) < 2:
+# 		print "Using default address of 00:00:65:87:CB:A9"
+# 		address = 0x6587cba9
+# 	else:
+# 		address = int(sys.argv[1].replace(':',''), 16)
+# 	pn = piconet.Piconet(address)
+# 	for x, channel in enumerate(pn.gen_hops()):
+# 		print "%02d" % channel
+# 		if x > 20:
+# 			sys.exit()
