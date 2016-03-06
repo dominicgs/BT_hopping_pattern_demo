@@ -93,7 +93,6 @@ if __name__ == '__main__':
 
 	if args.bredr:
 		address = args.address
-		print address
 		if address is None or len(address) == 0:
 			address = 0x6587cba9
 			print "Using default address of " + addr_to_mac(address)
