@@ -2,7 +2,7 @@
 
 # Copyright 2016 Dominic Spill
 
-from BT_hopping_pattern import piconet
+from BT_hopping_pattern import BR_EDR
 
 import matplotlib
 #matplotlib.use('qt5agg')
@@ -59,7 +59,7 @@ def addr_to_mac(address):
 
 def bluetooth_classic_pattern(address):
 	print "Performing hopping pattern pre-calculations"
-	pn = piconet.Piconet(address)
+	pn = BR_EDR.Piconet(address)
 	print "Pre-calculations complete"
 	pattern = pn.gen_hops()
 	title = 'Bluetooth Hopping Pattern for ' + addr_to_mac(address)
