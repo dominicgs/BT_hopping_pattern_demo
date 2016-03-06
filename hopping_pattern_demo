@@ -50,6 +50,8 @@ def draw_pattern(title, pattern):
 	bars = plt.bar(range(79), [0]*79, width=1)
 	waterfall = plt.bar(range(79), [0]*79, width=1)
 	plt.title(title)
+	plt.xticks([-2, 38, 78], ('2400', '2440', '2480'))
+	plt.xlabel('Frequency (MHz)')
 	plt.yticks([-5,0,1], ('', '', ''))
 	ani = animation.FuncAnimation(fig, animated_barplot, fargs=(fig, pattern, bars, waterfall))
 	plt.show()
