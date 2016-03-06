@@ -9,6 +9,6 @@ It is very early and rough, all contributions welcome.
 
 Dependencies
 ------------
-Python 2.6+
-Matplotlib
+* Python 2.6+
+* Matplotlib
 
