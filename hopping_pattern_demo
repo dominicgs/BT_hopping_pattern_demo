@@ -41,6 +41,7 @@ if __name__ == '__main__':
 	pn = piconet.Piconet(address)
 	print "Pre-calculations complete"
 	fig = plt.figure()
-	rects = plt.bar(range(79), [0]*79, width=1, align='center')
+	rects = plt.bar(range(79), [0]*79, width=1)
+	plt.yticks([0,1])
 	ani = animation.FuncAnimation(fig, animated_barplot, fargs=(rects,pn.gen_hops()))
 	plt.show()
