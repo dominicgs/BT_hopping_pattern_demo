@@ -30,24 +30,17 @@ def animated_barplot(count, rects, pattern):
         rects[channel].set_height(1)
     fig.canvas.draw()
 
-fig = plt.figure()
-rects = plt.bar(range(79), [0]*79, width=1, align='center')
-print dir(rects[0])
-address = 0x6587cba9
-pn = piconet.Piconet(address)
-ani = animation.FuncAnimation(fig, animated_barplot, fargs=(rects,pn.gen_hops()))
-plt.show()
-
-
-# if __name__ == '__main__':
-# 	import sys
-# 	if len(sys.argv) < 2:
-# 		print "Using default address of 00:00:65:87:CB:A9"
-# 		address = 0x6587cba9
-# 	else:
-# 		address = int(sys.argv[1].replace(':',''), 16)
-# 	pn = piconet.Piconet(address)
-# 	for x, channel in enumerate(pn.gen_hops()):
-# 		print "%02d" % channel
-# 		if x > 20:
-# 			sys.exit()
+if __name__ == '__main__':
+	import sys
+	if len(sys.argv) < 2:
+		print "Using default address of 00:00:65:87:CB:A9"
+		address = 0x6587cba9
+	else:
+		address = int(sys.argv[1].replace(':',''), 16)
+	print "Performing hopping pattern pre-calculations"
+	pn = piconet.Piconet(address)
+	print "Pre-calculations complete"
+	fig = plt.figure()
+	rects = plt.bar(range(79), [0]*79, width=1, align='center')
+	ani = animation.FuncAnimation(fig, animated_barplot, fargs=(rects,pn.gen_hops()))
+	plt.show()
