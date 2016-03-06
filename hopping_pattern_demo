@@ -5,7 +5,7 @@
 from BT_hopping_pattern import piconet
 
 import matplotlib
-matplotlib.use('qt5agg')
+#matplotlib.use('qt5agg')
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
@@ -20,7 +20,7 @@ colours = [
 	'#66ccff'
 ]
 
-def animated_barplot(count, pattern, bars, waterfall):
+def animated_barplot(count, fig, pattern, bars, waterfall):
 	if len(channels) == HOP_HISTORY:
 		previous_channel = channels.pop()
 		waterfall[previous_channel].set_color('white')
@@ -38,6 +38,16 @@ def animated_barplot(count, pattern, bars, waterfall):
 		waterfall[channel].set_color('#0066ff')
 	fig.canvas.draw()
 
+def draw_pattern(title, pattern):
+	fig = plt.figure()
+	fig.canvas.set_window_title(title)
+	bars = plt.bar(range(79), [0]*79, width=1)
+	waterfall = plt.bar(range(79), [0]*79, width=1)
+	plt.title(title)
+	plt.yticks([-5,0,1], ('', '', ''))
+	ani = animation.FuncAnimation(fig, animated_barplot, fargs=(fig, pattern, bars, waterfall))
+	plt.show()
+
 def addr_to_mac(address):
 	return "%02X:%02X:%02X:%02X:%02X:%02X" % \
 		((address >> 40) & 0xFF,
@@ -47,6 +57,14 @@ def addr_to_mac(address):
 		 (address >> 8) & 0xFF,
 		 address & 0xFF)
 
+def bluetooth_classic_pattern(address):
+	print "Performing hopping pattern pre-calculations"
+	pn = piconet.Piconet(address)
+	print "Pre-calculations complete"
+	pattern = pn.gen_hops()
+	title = 'Bluetooth Hopping Pattern for ' + addr_to_mac(address)
+	draw_pattern(title, pattern)
+
 if __name__ == '__main__':
 	import sys
 	if len(sys.argv) < 2:
@@ -54,14 +72,4 @@ if __name__ == '__main__':
 		print "Using default address of " + addr_to_mac(address)
 	else:
 		address = int(sys.argv[1].replace(':',''), 16)
-	print "Performing hopping pattern pre-calculations"
-	pn = piconet.Piconet(address)
-	print "Pre-calculations complete"
-	fig = plt.figure()
-	bars = plt.bar(range(79), [0]*79, width=1)
-	waterfall = plt.bar(range(79), [0]*79, width=1)
-	plt.title('Bluetooth Hopping Pattern for ' + addr_to_mac(address))
-	plt.yticks([-5,0,1], ('', '', ''))
-	pattern = pn.gen_hops()
-	ani = animation.FuncAnimation(fig, animated_barplot, fargs=(pattern, bars, waterfall))
-	plt.show()
+	bluetooth_classic_pattern(address)
