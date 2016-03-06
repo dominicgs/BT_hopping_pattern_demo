@@ -12,29 +12,38 @@ import matplotlib.animation as animation
 MAX_HISTORY = 5
 channels = []
 colours = [
-    #'#0000cc',
-    '#ff3300',
-    '#0000ff',
-    '#0066ff',
-    '#3399ff',
-    '#66ccff'
+	#'#0000cc',
+	'#ff3300',
+	'#0000ff',
+	'#0066ff',
+	'#3399ff',
+	'#66ccff'
 ]
 
 def animated_barplot(count, rects, pattern):
-    if len(channels) == MAX_HISTORY:
-        previous_channel = channels.pop()
-        rects[previous_channel].set_height(0)
-    channels.insert(0, pattern.next())
-    for idx, channel in enumerate(channels):
-        rects[channel].set_color(colours[idx])
-        rects[channel].set_height(1)
-    fig.canvas.draw()
+	if len(channels) == MAX_HISTORY:
+		previous_channel = channels.pop()
+		rects[previous_channel].set_height(0)
+	channels.insert(0, pattern.next())
+	for idx, channel in enumerate(channels):
+		rects[channel].set_color(colours[idx])
+		rects[channel].set_height(1)
+	fig.canvas.draw()
+
+def addr_to_mac(address):
+	return "%02X:%02X:%02X:%02X:%02X:%02X" % \
+		((address >> 40) & 0xFF,
+		 (address >> 32) & 0xFF,
+		 (address >> 24) & 0xFF,
+		 (address >> 16) & 0xFF,
+		 (address >> 8) & 0xFF,
+		 address & 0xFF)
 
 if __name__ == '__main__':
 	import sys
 	if len(sys.argv) < 2:
-		print "Using default address of 00:00:65:87:CB:A9"
 		address = 0x6587cba9
+		print "Using default address of " + addr_to_mac(address)
 	else:
 		address = int(sys.argv[1].replace(':',''), 16)
 	print "Performing hopping pattern pre-calculations"
@@ -42,6 +51,7 @@ if __name__ == '__main__':
 	print "Pre-calculations complete"
 	fig = plt.figure()
 	rects = plt.bar(range(79), [0]*79, width=1)
+	plt.title('Bluetooth Hopping Pattern for ' + addr_to_mac(address))
 	plt.yticks([0,1])
 	ani = animation.FuncAnimation(fig, animated_barplot, fargs=(rects,pn.gen_hops()))
 	plt.show()
