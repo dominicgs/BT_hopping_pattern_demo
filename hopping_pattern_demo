@@ -2,7 +2,7 @@
 
 # Copyright 2016 Dominic Spill
 
-from BT_hopping_pattern import BR_EDR
+from BT_hopping_pattern import BR_EDR, LE
 
 import matplotlib
 #matplotlib.use('qt5agg')
@@ -74,19 +74,40 @@ def bluetooth_classic_pattern(address):
 	title = 'Bluetooth Hopping Pattern for ' + addr_to_mac(address)
 	draw_pattern(title, pattern)
 
+def bluetooth_le_pattern(hop_increment, channel_map):
+	conn = LE.Connection(hop_increment, channel_map)
+	pattern = conn.gen_hops()
+	draw_pattern("Bluetooth LE Hopping Pattern", pattern)
+
 if __name__ == '__main__':
 	import argparse
 
 	parser = argparse.ArgumentParser(description='Animate Bluetooth hopping patterns.')
 	parser.add_argument('-b', '--bredr', action='store_true', help="BR/EDR")
 	parser.add_argument('-a', '--address', nargs=1, help="BD address for BR/EDR")
+	parser.add_argument('-l', '--le', action='store_true', help="LE")
+	parser.add_argument('-i', '--hop-increment', nargs=1, type=int, help="Hop increment for LE")
+	parser.add_argument('-c', '--channel-map', nargs=1, type=int, help="Channel map for LE")
 
 	args = parser.parse_args()
 
-	address = args.address
-	if address is None:
-		address = 0x6587cba9
-		print "Using default address of " + addr_to_mac(address)
+	if args.bredr:
+		address = args.address
+		if address is None:
+			address = 0x6587cba9
+			print "Using default address of " + addr_to_mac(address)
+		else:
+			address = int(sys.argv[1].replace(':',''), 16)
+		bluetooth_classic_pattern(address)
+	elif args.le:
+		hop_increment = args.hop_increment
+		if hop_increment is None:
+			print "Using default hop increment of 7"
+			hop_increment = 7
+		channel_map = args.channel_map
+		if channel_map is None:
+			print "Using default channel map of 0x1fffffffff"
+			channel_map = 0x1fffffffff
+		bluetooth_le_pattern(hop_increment, channel_map)
 	else:
-		address = int(sys.argv[1].replace(':',''), 16)
-	bluetooth_classic_pattern(address)
+		print "Specify either --bredr or --le"
