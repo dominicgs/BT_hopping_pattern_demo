@@ -93,11 +93,12 @@ if __name__ == '__main__':
 
 	if args.bredr:
 		address = args.address
-		if address is None:
+		print address
+		if address is None or len(address) == 0:
 			address = 0x6587cba9
 			print "Using default address of " + addr_to_mac(address)
 		else:
-			address = int(sys.argv[1].replace(':',''), 16)
+			address = int(address[0].replace(':',''), 16)
 		bluetooth_classic_pattern(address)
 	elif args.le:
 		hop_increment = args.hop_increment
