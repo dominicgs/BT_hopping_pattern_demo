@@ -9,7 +9,7 @@ matplotlib.use('qt5agg')
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-MAX_HISTORY = 5
+HOP_HISTORY = 50
 channels = []
 colours = [
 	#'#0000cc',
@@ -20,14 +20,22 @@ colours = [
 	'#66ccff'
 ]
 
-def animated_barplot(count, rects, pattern):
-	if len(channels) == MAX_HISTORY:
+def animated_barplot(count, pattern, bars, waterfall):
+	if len(channels) == HOP_HISTORY:
 		previous_channel = channels.pop()
-		rects[previous_channel].set_height(0)
+		waterfall[previous_channel].set_color('white')
+		waterfall[previous_channel].set_height(0)
 	channels.insert(0, pattern.next())
 	for idx, channel in enumerate(channels):
-		rects[channel].set_color(colours[idx])
-		rects[channel].set_height(1)
+		if idx < len(colours):
+			bars[channel].set_color(colours[idx])
+			bars[channel].set_height(1)
+		else:
+			bars[channel].set_color('white')
+			bars[channel].set_height(0)
+		waterfall[channel].set_height(-0.1)
+		waterfall[channel].set_y(-0.1 * idx)
+		waterfall[channel].set_color('#0066ff')
 	fig.canvas.draw()
 
 def addr_to_mac(address):
@@ -50,8 +58,10 @@ if __name__ == '__main__':
 	pn = piconet.Piconet(address)
 	print "Pre-calculations complete"
 	fig = plt.figure()
-	rects = plt.bar(range(79), [0]*79, width=1)
+	bars = plt.bar(range(79), [0]*79, width=1)
+	waterfall = plt.bar(range(79), [0]*79, width=1)
 	plt.title('Bluetooth Hopping Pattern for ' + addr_to_mac(address))
-	plt.yticks([0,1])
-	ani = animation.FuncAnimation(fig, animated_barplot, fargs=(rects,pn.gen_hops()))
+	plt.yticks([-5,0,1], ('', '', ''))
+	pattern = pn.gen_hops()
+	ani = animation.FuncAnimation(fig, animated_barplot, fargs=(pattern, bars, waterfall))
 	plt.show()
