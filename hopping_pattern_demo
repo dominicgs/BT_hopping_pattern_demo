@@ -12,8 +12,8 @@ import matplotlib.animation as animation
 HOP_HISTORY = 50
 channels = []
 colours = [
-	#'#0000cc',
-	'#ff3300',
+	'#0000cc',
+	#'#ff3300',
 	'#0000ff',
 	'#0066ff',
 	'#3399ff',
@@ -23,10 +23,11 @@ colours = [
 def animated_barplot(count, fig, pattern, bars, waterfall):
 	if len(channels) == HOP_HISTORY:
 		previous_channel = channels.pop()
-		waterfall[previous_channel].set_color('white')
-		waterfall[previous_channel].set_height(0)
+		waterfall[previous_channel[0]].set_color('white')
+		waterfall[previous_channel[0]].set_height(0)
 	channels.insert(0, pattern.next())
-	for idx, channel in enumerate(channels):
+	for idx, timeslot in enumerate(channels):
+		channel, master = timeslot
 		if idx < len(colours):
 			bars[channel].set_color(colours[idx])
 			bars[channel].set_height(1)
@@ -35,7 +36,12 @@ def animated_barplot(count, fig, pattern, bars, waterfall):
 			bars[channel].set_height(0)
 		waterfall[channel].set_height(-0.1)
 		waterfall[channel].set_y(-0.1 * idx)
-		waterfall[channel].set_color('#0066ff')
+		# Blue for master to slave
+		# Red for slave to master
+		if master:
+			waterfall[channel].set_color('blue')
+		else:
+			waterfall[channel].set_color('red')
 	fig.canvas.draw()
 
 def draw_pattern(title, pattern):

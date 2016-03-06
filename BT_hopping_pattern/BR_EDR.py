@@ -97,13 +97,13 @@ class Piconet(object):
 							perm_out = self.fast_perm(perm_in, c, d)
 							channel = self.channels[(perm_out + self.e + f) % BT_NUM_CHANNELS]
 							#self.sequence.append(channel)
-							yield channel
+							yield channel, True
 							
 							# y1 (clock bit 1) = 1, y2 = 32
 							perm_out = self.fast_perm(perm_in, c_flipped, d)
 							channel = self.channels[(perm_out + self.e + f + 32) % BT_NUM_CHANNELS]
 							#self.sequence.append(channel)
-							yield channel
+							yield channel, False
 						base_f = base_f + 16
 						f = base_f % BT_NUM_CHANNELS
 
