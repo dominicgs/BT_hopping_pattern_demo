@@ -75,8 +75,16 @@ def bluetooth_classic_pattern(address):
 	draw_pattern(title, pattern)
 
 if __name__ == '__main__':
-	import sys
-	if len(sys.argv) < 2:
+	import argparse
+
+	parser = argparse.ArgumentParser(description='Animate Bluetooth hopping patterns.')
+	parser.add_argument('-b', '--bredr', action='store_true', help="BR/EDR")
+	parser.add_argument('-a', '--address', nargs=1, help="BD address for BR/EDR")
+
+	args = parser.parse_args()
+
+	address = args.address
+	if address is None:
 		address = 0x6587cba9
 		print "Using default address of " + addr_to_mac(address)
 	else:
