@@ -86,6 +86,9 @@ def bluetooth_le_pattern(hop_increment, channel_map):
 	pattern = conn.gen_hops()
 	draw_pattern("Bluetooth LE Hopping Pattern", pattern)
 
+def hex_int(x):
+    return int(x, 16)
+
 if __name__ == '__main__':
 	import argparse
 
@@ -94,27 +97,29 @@ if __name__ == '__main__':
 	parser.add_argument('-a', '--address', nargs=1, help="BD address for BR/EDR")
 	parser.add_argument('-l', '--le', action='store_true', help="LE")
 	parser.add_argument('-i', '--hop-increment', nargs=1, type=int, help="Hop increment for LE")
-	parser.add_argument('-c', '--channel-map', nargs=1, type=int, help="Channel map for LE")
+	parser.add_argument('-c', '--channel-map', nargs=1, type=hex_int, help="Channel map for LE")
 
 	args = parser.parse_args()
 
 	if args.bredr:
-		address = args.address
-		if address is None or len(address) == 0:
+		if args.address is None or len(args.address) == 0:
 			address = 0x6587cba9
 			print "Using default address of " + addr_to_mac(address)
 		else:
-			address = int(address[0].replace(':',''), 16)
+			address = int(args.address[0].replace(':',''), 16)
 		bluetooth_classic_pattern(address)
 	elif args.le:
 		hop_increment = args.hop_increment
 		if hop_increment is None:
 			print "Using default hop increment of 7"
 			hop_increment = 7
-		channel_map = args.channel_map
-		if channel_map is None:
+		
+		print args.channel_map
+		if args.channel_map is None:
 			print "Using default channel map of 0x1fffffffff"
 			channel_map = 0x1fffffffff
+		else:
+			channel_map = args.channel_map[0]
 		bluetooth_le_pattern(hop_increment, channel_map)
 	else:
 		print "Specify either --bredr or --le"
